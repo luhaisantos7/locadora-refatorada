@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Cliente {
     private String nome;
@@ -7,55 +8,44 @@ public class Cliente {
     public Cliente(String nome) {
         this.nome = nome;
     }
-    
-    public String getNome() {
-        return nome;
-    }
 
     public void adicionaAluguel(Aluguel aluguel) {
         alugueis.add(aluguel);
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public String extrato() {
-        double valorTotal = 0;
-        int pontosDeAlugadorFrequente = 0;
         String resultado = "Registro de Alugueis de " + getNome() + "\n";
 
         for (Aluguel aluguel : alugueis) {
-            double valorCorrente = 0; //custo do aluguel atual
-
-            // cálculo do valor
-            switch (aluguel.getFita().getCodigoDePreco()) {
-                case Fita.NORMAL:
-                    valorCorrente += 2;
-                    if (aluguel.getDiasAlugada() > 2)
-                        valorCorrente += (aluguel.getDiasAlugada() - 2) * 1.5;
-                    break;
-                case Fita.LANCAMENTO:
-                    valorCorrente += aluguel.getDiasAlugada() * 3;
-                    break;
-                case Fita.INFANTIL:
-                    valorCorrente += 1.5;
-                    if (aluguel.getDiasAlugada() > 3)
-                        valorCorrente += (aluguel.getDiasAlugada() - 3) * 1.5;
-                    break;
-            }
-
-            // pontos de aluguel frequente
-            pontosDeAlugadorFrequente++;
-            if ((aluguel.getFita().getCodigoDePreco() == Fita.LANCAMENTO) 
-                && aluguel.getDiasAlugada() > 1) {
-                pontosDeAlugadorFrequente++;
-            }
-
-            // linha do extrato
-            resultado += "\t" + aluguel.getFita().getTitulo() + "\t" + valorCorrente + "\n";
-            valorTotal += valorCorrente;
+            // Mostra o valor calculado de cada fita alugada
+            resultado += "\t" + aluguel.getFita().getTitulo() + "\t" + String.valueOf(aluguel.getValor()) + "\n";
         }
 
-        // rodapé
-        resultado += "Valor total devido: " + valorTotal + "\n";
-        resultado += "Você ganhou " + pontosDeAlugadorFrequente + " pontos de alugador frequente";
+        // Rodapé: variáveis temporárias substituídas pelas chamadas de consulta direta
+        resultado += "Valor total devido: " + String.valueOf(getValorTotal()) + "\n";
+        resultado += "Voce acumulou " + String.valueOf(getPontosTotaisDeFidelizador()) + " pontos de fidelizador";
         return resultado;
+    }
+
+    // 2ª Refatoração: método de consulta para o total devido
+    public double getValorTotal() {
+        double total = 0;
+        for (Aluguel aluguel : alugueis) {
+            total += aluguel.getValor();
+        }
+        return total;
+    }
+
+    // 2ª Refatoração: método de consulta para o total de pontos
+    public int getPontosTotaisDeFidelizador() {
+        int totalPontos = 0;
+        for (Aluguel aluguel : alugueis) {
+            totalPontos += aluguel.getPontosDeFidelizador();
+        }
+        return totalPontos;
     }
 }
